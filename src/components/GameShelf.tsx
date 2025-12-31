@@ -1,9 +1,45 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { X, ChevronDown, ChevronUp, Users, Clock, Brain } from 'lucide-react'
+
+// Define the types
+export interface Friend {
+  id: string
+  name: string
+  avatar: string // Initials or image URL
+}
+
+export interface Comment {
+  id: string
+  author: string
+  avatar: string
+  text: string
+  likes?: number
+  owns?: boolean
+}
+
+export interface Game {
+  id: string
+  title: string
+  spineImage: string
+  coverImage: string
+  description: string
+  players?: string
+  difficulty?: string
+  time?: string
+  owners: Friend[]
+  comments: Comment[]
+}
+
+// Props for the GameShelf
+interface GameShelfProps {
+  games?: Game[]
+}
 
 const woodTexture_horizontal = "url('/wood-horizontal.png')"
 const woodTexture_vertical = "url('/wood-vertical.png')"
 
-export default function GameShelf({ children }: { children?: React.ReactNode }) {
+export default function GameShelf({ games = [] }: GameShelfProps) {
+  const woodTexture = "url('/wood.png')"
   const [debug, setDebug] = React.useState({
     mainContainer: true,
     room: true,
@@ -17,6 +53,16 @@ export default function GameShelf({ children }: { children?: React.ReactNode }) 
   })
 
   const toggle = (key: keyof typeof debug) => setDebug(p => ({ ...p, [key]: !p[key] }))
+
+  const [selectedGame, setSelectedGame] = useState<Game | null>(null)
+
+  // Distribute games across rows (simple logic for now: 5 per row)
+  const itemsPerRow = 5
+  const rows = [
+    games.slice(0, itemsPerRow),
+    games.slice(itemsPerRow, itemsPerRow * 2),
+    games.slice(itemsPerRow * 2, itemsPerRow * 3)
+  ]
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4 flex flex-col items-center">
@@ -61,9 +107,9 @@ export default function GameShelf({ children }: { children?: React.ReactNode }) 
             }}
           >
             {/* Rows */}
-            {debug.shelf1 && <ShelfRow />}
-            {debug.shelf2 && <ShelfRow />}
-            {debug.shelf3 && <ShelfRow />}
+            {debug.shelf1 && <ShelfRow games={rows[0]} onGameClick={setSelectedGame} />}
+            {debug.shelf2 && <ShelfRow games={rows[1]} onGameClick={setSelectedGame} />}
+            {debug.shelf3 && <ShelfRow games={rows[2]} onGameClick={setSelectedGame} />}
           </div>
 
         </div>
@@ -85,11 +131,16 @@ export default function GameShelf({ children }: { children?: React.ReactNode }) 
           </button>
         ))}
       </div>
+
+      {/* Game Details Modal */}
+      {selectedGame && (
+        <GameDetailModal game={selectedGame} onClose={() => setSelectedGame(null)} />
+      )}
     </div >
   )
 }
 
-function ShelfRow() {
+function ShelfRow({ isBottom = false, games = [], onGameClick }: { isBottom?: boolean, games: Game[], onGameClick: (game: Game) => void }) {
   // Dimensions for the top surface perspective
   const height = 14
   const inset = 24
@@ -100,10 +151,20 @@ function ShelfRow() {
 
   return (
     <div className="flex-1 relative flex items-end px-2 group min-h-[200px]">
-
-      {/* Content Area */}
-      <div className="relative z-10 w-full h-full flex items-end justify-center pb-5">
-        {/* Games would go here */}
+      <div className="absolute z-30 w-[calc(100%+48px)] -ml-6 h-full flex items-end justify-center px-6 pb-[25px] gap-4">
+        {games.map((game) => (
+          <button
+            key={game.id}
+            onClick={() => onGameClick(game)}
+            className="relative transition-transform hover:-translate-y-3 hover:scale-110 focus:outline-none"
+          >
+            <img
+              src={game.spineImage}
+              alt={`${game.title} spine`}
+              className="h-46 w-auto object-contain drop-shadow-2xl rounded-[1px]"
+            />
+          </button>
+        ))}
       </div>
 
       {/* The Shelf PLANK */}
@@ -159,6 +220,174 @@ function ShelfRow() {
             // borderRadius: '0 0 2px 2px'
           }}
         />
+      </div>
+    </div>
+  )
+}
+
+function GameDetailModal({ game, onClose }: { game: Game, onClose: () => void }) {
+  const [showOwners, setShowOwners] = useState(false)
+
+  // Explicitly check if owners array exists and calculate length properly
+  const ownersCount = game.owners?.length || 0
+  const hasOwners = ownersCount > 0
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-[#FAF9F6] rounded-2xl w-full max-w-lg shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 border-4 border-[#F3E5AB] max-h-[90vh]">
+
+        {/* HEADER: Cover + Info Side-by-Side */}
+        <div className="relative p-6 bg-amber-50/50 border-b border-[#E0D8C0] flex gap-5 items-start shrink-0">
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 p-1.5 bg-white/50 hover:bg-white rounded-full text-[#5D4037] transition-colors z-10"
+          >
+            <X size={20} />
+          </button>
+
+          {/* Cover Image */}
+          <div className="shrink-0">
+            <img
+              src={game.coverImage}
+              alt={game.title}
+              className="w-24 h-24 object-cover rounded-lg shadow-md rotate-[-2deg]"
+            />
+          </div>
+
+          {/* Title & Stats */}
+          <div className="flex-1 pt-1 min-w-0">
+            <h2 className="text-xl font-bold text-[#5D4037] font-display leading-tight mb-3 truncate">{game.title}</h2>
+
+            <div className="flex flex-wrap gap-3 mt-1">
+              {game.players && (
+                <span className="text-xs text-[#6D5A50] font-bold flex items-center gap-1.5">
+                  <Users size={14} className="text-[#8D7F75]" />
+                  {game.players}
+                </span>
+              )}
+              {game.time && (
+                <span className="text-xs text-[#6D5A50] font-bold flex items-center gap-1.5 border-l border-[#E0D8C0] pl-3">
+                  <Clock size={14} className="text-[#8D7F75]" />
+                  {game.time}
+                </span>
+              )}
+              {game.difficulty && (
+                <span className="text-xs text-[#6D5A50] font-bold flex items-center gap-1.5 border-l border-[#E0D8C0] pl-3">
+                  <Brain size={14} className="text-[#8D7F75]" />
+                  {game.difficulty}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* SCROLLABLE CONTENT */}
+        <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
+
+          {/* Short Description */}
+          <div className="mb-6">
+            <p className="text-[#6D5A50] text-sm leading-relaxed line-clamp-3">
+              {game.description}
+            </p>
+          </div>
+
+          {/* OWNERS SECTION */}
+          <div className="mb-6">
+            {hasOwners ? (
+              <>
+                <h3 className="text-xs font-bold text-[#8D7F75] uppercase tracking-widest mb-3">Owned by {ownersCount} Friends</h3>
+                <div
+                  className="flex items-center gap-3 cursor-pointer p-3 bg-white border border-[#E0D8C0] rounded-xl hover:bg-[#F5F1E8] transition-colors"
+                  onClick={() => setShowOwners(!showOwners)}
+                >
+                  {/* Avatar Stack */}
+                  <div className="flex -space-x-3">
+                    {game.owners.slice(0, 5).map(owner => (
+                      <div key={owner.id} className="w-8 h-8 rounded-full border-2 border-white bg-[#D6A886] flex items-center justify-center text-white text-[10px] font-bold shadow-sm">
+                        {owner.avatar}
+                      </div>
+                    ))}
+                    {ownersCount > 5 && (
+                      <div className="w-8 h-8 rounded-full border-2 border-white bg-[#E0D8C0] flex items-center justify-center text-[#5D4037] text-[10px] font-bold shadow-sm">
+                        +{ownersCount - 5}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex-1">
+                    <p className="text-sm font-bold text-[#5D4037] flex items-center gap-1">
+                      View Friends
+                      {showOwners ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Expandable Owners List */}
+                {showOwners && (
+                  <div className="mt-2 bg-white/50 border border-[#E0D8C0] rounded-xl p-2 animate-in slide-in-from-top-2">
+                    {game.owners.map(owner => (
+                      <div key={owner.id} className="flex items-center gap-3 p-2 hover:bg-white rounded-lg transition-colors">
+                        <div className="w-6 h-6 rounded-full bg-[#D6A886] flex items-center justify-center text-white text-[10px] font-bold">
+                          {owner.avatar}
+                        </div>
+                        <span className="text-[#5D4037] font-medium text-sm">{owner.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : (
+              <p className="text-sm text-[#8D7F75] italic">No friends own this game yet.</p>
+            )}
+          </div>
+
+          {/* COMMENTS SECTION */}
+          <div className="bg-white rounded-xl p-5 shadow-sm border border-[#E0D8C0]">
+            <h3 className="text-sm font-bold text-[#5D4037] mb-4 flex items-center gap-2">
+              <span>Friends' Thoughts</span>
+            </h3>
+
+            <div className="space-y-4">
+              {game.comments.length > 0 ? game.comments.map((comment) => (
+                <div key={comment.id} className="flex gap-3">
+                  <div className="flex-shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold border-2 border-white shadow-sm text-xs">
+                      {comment.avatar}
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-1 gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-[#5D4037] text-sm">{comment.author}</span>
+                        {comment.owns && (
+                          <span className="px-1.5 py-0.5 bg-[#C1E8CE] text-[#2C4834] text-[9px] font-bold uppercase tracking-wider rounded-sm border border-[#A3D9B5]">Owns</span>
+                        )}
+                      </div>
+                      <span className="text-[10px] text-[#8D7F75]">2h</span>
+                    </div>
+                    {comment.text && (
+                      <div className="bg-[#F5F1E8] p-2.5 rounded-lg rounded-tl-none text-[#5D4037] text-sm leading-relaxed relative">
+                        "{comment.text}"
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )) : (
+                <div className="text-center py-4">
+                  <p className="text-[#8D7F75] text-xs italic">No thoughts yet.</p>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-[#E0D8C0]">
+              <input
+                type="text"
+                placeholder="Write a comment..."
+                className="w-full px-3 py-2.5 rounded-lg bg-[#F5F1E8] border-none focus:ring-2 focus:ring-[#C1E8CE] text-[#5D4037] placeholder-[#8D7F75] text-sm"
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
