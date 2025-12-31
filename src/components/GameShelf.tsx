@@ -38,8 +38,11 @@ interface GameShelfProps {
 const woodTexture_horizontal = "url('/wood-horizontal.png')"
 const woodTexture_vertical = "url('/wood-vertical.png')"
 
+// Adjust this value (0-1) to warm up the wood tone. 
+// Higher values = more amber/orange influence.
+const woodWarmthOpacity = 0.35
+
 export default function GameShelf({ games = [] }: GameShelfProps) {
-  const woodTexture = "url('/wood.png')"
   const [debug, setDebug] = React.useState({
     mainContainer: true,
     room: true,
@@ -140,7 +143,7 @@ export default function GameShelf({ games = [] }: GameShelfProps) {
   )
 }
 
-function ShelfRow({ isBottom = false, games = [], onGameClick }: { isBottom?: boolean, games: Game[], onGameClick: (game: Game) => void }) {
+function ShelfRow({ games = [], onGameClick }: { games: Game[], onGameClick: (game: Game) => void }) {
   // Dimensions for the top surface perspective
   const height = 14
   const inset = 24
@@ -181,6 +184,9 @@ function ShelfRow({ isBottom = false, games = [], onGameClick }: { isBottom?: bo
             clipPath: `polygon(${inset}px 0, calc(100% - ${inset}px) 0, 100% 100%, 0 100%)`
           }}
         >
+          {/* Warmth Overlay */}
+          <div className="absolute inset-0 bg-amber-500 mix-blend-overlay pointer-events-none" style={{ opacity: woodWarmthOpacity }}></div>
+          {/* Darkness Overlay */}
           <div className="absolute inset-0 bg-black" style={{ opacity: topSurfaceDarkness }}></div>
         </div>
 
@@ -219,7 +225,10 @@ function ShelfRow({ isBottom = false, games = [], onGameClick }: { isBottom?: bo
             borderBottom: '1px solid #5D4037',
             // borderRadius: '0 0 2px 2px'
           }}
-        />
+        >
+          {/* Warmth Overlay */}
+          <div className="absolute inset-0 bg-amber-500 mix-blend-overlay pointer-events-none" style={{ opacity: woodWarmthOpacity }}></div>
+        </div>
       </div>
     </div>
   )
@@ -409,7 +418,10 @@ function LeftWall({ debugShow = true }: { debugShow?: boolean }) {
           borderBottom: `1px solid ${borderColor}`,
           borderRight: `1px solid ${borderColor}`,
         }}
-      />
+      >
+        {/* Warmth Overlay */}
+        <div className="absolute inset-0 bg-amber-500 mix-blend-overlay pointer-events-none" style={{ opacity: woodWarmthOpacity }}></div>
+      </div>
       {/* Inner Wall */}
       <div
         className="absolute top-0 bottom-0 left-[24px] w-[24px] z-10"
@@ -422,7 +434,10 @@ function LeftWall({ debugShow = true }: { debugShow?: boolean }) {
           borderBottom: `1px solid ${borderColor}`,
         }}
       >
-        {/* <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black" style={{ opacity: topSurfaceDarkness }}></div> */}
+
+        {/* Warmth Overlay */}
+        <div className="absolute inset-0 bg-amber-500 mix-blend-overlay pointer-events-none" style={{ opacity: woodWarmthOpacity }}></div>
+        {/* Darkness Overlay */}
         <div className="absolute inset-0 bg-black" style={{ opacity: topSurfaceDarkness }}></div>
       </div>
     </>
@@ -444,7 +459,10 @@ function RightWall({ debugShow = true }: { debugShow?: boolean }) {
           borderBottom: `1px solid ${borderColor}`,
           borderRight: `1px solid ${borderColor}`,
         }}
-      />
+      >
+        {/* Warmth Overlay */}
+        <div className="absolute inset-0 bg-amber-500 mix-blend-overlay pointer-events-none" style={{ opacity: woodWarmthOpacity }}></div>
+      </div>
       <div
         className="absolute top-0 bottom-0 right-[24px] w-[24px] z-10"
         style={{
@@ -456,7 +474,10 @@ function RightWall({ debugShow = true }: { debugShow?: boolean }) {
           borderBottom: `1px solid ${borderColor}`,
         }}
       >
-        {/* <div className="absolute inset-0 bg-gradient-to-l from-transparent to-black" style={{ opacity: topSurfaceDarkness }}></div> */}
+
+        {/* Warmth Overlay */}
+        <div className="absolute inset-0 bg-amber-500 mix-blend-overlay pointer-events-none" style={{ opacity: woodWarmthOpacity }}></div>
+        {/* Darkness Overlay */}
         <div className="absolute inset-0 bg-black" style={{ opacity: topSurfaceDarkness }}></div>
       </div>
     </>
@@ -479,10 +500,12 @@ function TopWall({ debugShow = true }: { debugShow?: boolean }) {
           backgroundImage: woodTexture_horizontal,
           borderTop: `1px solid ${borderColor}`,
           borderBottom: `1px solid ${borderColor}`,
-          // borderLeft: `1px solid ${borderColor}`,
           // borderRight: `1px solid ${borderColor}`,
         }}
-      />
+      >
+        {/* Warmth Overlay */}
+        <div className="absolute inset-0 bg-amber-500 mix-blend-overlay pointer-events-none" style={{ opacity: woodWarmthOpacity }}></div>
+      </div>
 
       {/* Inner Top */}
       <div
@@ -497,6 +520,10 @@ function TopWall({ debugShow = true }: { debugShow?: boolean }) {
           borderBottom: `1px solid ${borderColor}`,
         }}
       >
+
+        {/* Warmth Overlay */}
+        <div className="absolute inset-0 bg-amber-500 mix-blend-overlay pointer-events-none" style={{ opacity: woodWarmthOpacity }}></div>
+        {/* Darkness Overlay */}
         <div className="absolute inset-0 bg-black" style={{ opacity: topSurfaceDarkness }}></div>
       </div>
 
