@@ -14,6 +14,7 @@ export interface Comment {
   avatar: string
   text: string
   likes?: number
+  owns?: boolean
 }
 
 export interface Game {
@@ -130,18 +131,17 @@ export default function GameShelf({ games = [] }: GameShelfProps) {
 function ShelfRow({ woodTexture, isBottom = false, games = [], onGameClick }: { woodTexture: string, isBottom?: boolean, games: Game[], onGameClick: (game: Game) => void }) {
   return (
     <div className="flex-1 relative flex items-end px-2 group min-h-[200px]">
-      <div className="relative z-10 w-full h-full flex items-end justify-start px-8 pb-5 gap-2">
+      <div className="absolute z-30 w-[calc(100%+48px)] -ml-6 h-full flex items-end justify-center px-6 pb-[25px] gap-4">
          {games.map((game) => (
            <button 
              key={game.id} 
              onClick={() => onGameClick(game)}
-             className="relative transition-transform hover:-translate-y-2 hover:scale-105 focus:outline-none"
+             className="relative transition-transform hover:-translate-y-3 hover:scale-110 focus:outline-none"
            >
              <img 
                src={game.spineImage} 
                alt={`${game.title} spine`} 
-               className="h-40 w-auto object-contain drop-shadow-md rounded-sm"
-               style={{ maxWidth: '60px' }} 
+               className="h-46 w-auto object-contain drop-shadow-2xl rounded-[1px]"
              />
            </button>
          ))}
@@ -182,52 +182,62 @@ function GameDetailModal({ game, onClose }: { game: Game, onClose: () => void })
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-[#FAF9F6] rounded-2xl w-full max-w-4xl shadow-2xl flex flex-col md:flex-row overflow-hidden animate-in zoom-in-95 duration-200 border-4 border-[#F3E5AB]">
-         {/* Left Side: Game Cover & Basics */}
-         <div className="p-8 bg-amber-50/50 flex flex-col items-center justify-center md:w-1/3 border-r border-[#E0D8C0]">
-            <img 
-              src={game.coverImage} 
-              alt={game.title} 
-              className="w-full max-w-[250px] rounded-lg shadow-xl rotate-[-2deg] mb-6 hover:rotate-0 transition-transform duration-300"
-            />
-            <h2 className="text-2xl font-bold text-[#5D4037] text-center font-display">{game.title}</h2>
+      <div className="bg-[#FAF9F6] rounded-2xl w-full max-w-lg shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 border-4 border-[#F3E5AB] max-h-[90vh]">
+         
+         {/* HEADER: Cover + Info Side-by-Side */}
+         <div className="relative p-6 bg-amber-50/50 border-b border-[#E0D8C0] flex gap-5 items-start shrink-0">
+            <button 
+              onClick={onClose}
+              className="absolute top-3 right-3 p-1.5 bg-white/50 hover:bg-white rounded-full text-[#5D4037] transition-colors z-10"
+            >
+              <X size={20} />
+            </button>
+
+            {/* Cover Image */}
+            <div className="shrink-0">
+                <img 
+                src={game.coverImage} 
+                alt={game.title} 
+                className="w-24 h-24 object-cover rounded-lg shadow-md rotate-[-2deg]"
+                />
+            </div>
             
-            <div className="mt-4 flex flex-wrap justify-center gap-2">
-               {game.players && (
-                 <span className="px-3 py-1 bg-[#F3E5AB] text-[#5D4037] rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1">
-                    <Users size={14} />
-                    {game.players}
-                 </span>
-               )}
-               {game.time && (
-                 <span className="px-3 py-1 bg-[#F3E5AB] text-[#5D4037] rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1">
-                    <Clock size={14} />
-                    {game.time}
-                 </span>
-               )}
-               {game.difficulty && (
-                 <span className="px-3 py-1 bg-[#C1E8CE] text-[#2C4834] rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1">
-                    <Brain size={14} />
-                    {game.difficulty}
-                 </span>
-               )}
+            {/* Title & Stats */}
+            <div className="flex-1 pt-1 min-w-0">
+                <h2 className="text-xl font-bold text-[#5D4037] font-display leading-tight mb-3 truncate">{game.title}</h2>
+                
+                <div className="flex flex-wrap gap-3 mt-1">
+                   {game.players && (
+                     <span className="text-xs text-[#6D5A50] font-bold flex items-center gap-1.5">
+                        <Users size={14} className="text-[#8D7F75]" />
+                        {game.players}
+                     </span>
+                   )}
+                   {game.time && (
+                     <span className="text-xs text-[#6D5A50] font-bold flex items-center gap-1.5 border-l border-[#E0D8C0] pl-3">
+                        <Clock size={14} className="text-[#8D7F75]" />
+                        {game.time}
+                     </span>
+                   )}
+                   {game.difficulty && (
+                     <span className="text-xs text-[#6D5A50] font-bold flex items-center gap-1.5 border-l border-[#E0D8C0] pl-3">
+                        <Brain size={14} className="text-[#8D7F75]" />
+                        {game.difficulty}
+                     </span>
+                   )}
+                </div>
             </div>
          </div>
 
-         {/* Right Side: Details & Community */}
-         <div className="relative md:w-2/3 flex flex-col h-[600px]">
-            <button 
-              onClick={onClose}
-              className="absolute top-4 right-4 p-2 bg-white/50 hover:bg-white rounded-full text-[#5D4037] transition-colors z-10"
-            >
-              <X size={24} />
-            </button>
-
-            <div className="p-8 overflow-y-auto flex-1 custom-scrollbar">
-              <h3 className="text-lg font-bold text-[#5D4037] mb-2">About this game</h3>
-              <p className="text-[#6D5A50] leading-relaxed mb-6">
-                {game.description}
-              </p>
+         {/* SCROLLABLE CONTENT */}
+         <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
+              
+              {/* Short Description */}
+              <div className="mb-6">
+                 <p className="text-[#6D5A50] text-sm leading-relaxed line-clamp-3">
+                    {game.description}
+                 </p>
+              </div>
 
               {/* OWNERS SECTION */}
               <div className="mb-6">
@@ -241,12 +251,12 @@ function GameDetailModal({ game, onClose }: { game: Game, onClose: () => void })
                       {/* Avatar Stack */}
                       <div className="flex -space-x-3">
                          {game.owners.slice(0, 5).map(owner => (
-                           <div key={owner.id} className="w-10 h-10 rounded-full border-2 border-white bg-[#D6A886] flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                           <div key={owner.id} className="w-8 h-8 rounded-full border-2 border-white bg-[#D6A886] flex items-center justify-center text-white text-[10px] font-bold shadow-sm">
                              {owner.avatar}
                            </div>
                          ))}
                          {ownersCount > 5 && (
-                           <div className="w-10 h-10 rounded-full border-2 border-white bg-[#E0D8C0] flex items-center justify-center text-[#5D4037] text-xs font-bold shadow-sm">
+                           <div className="w-8 h-8 rounded-full border-2 border-white bg-[#E0D8C0] flex items-center justify-center text-[#5D4037] text-[10px] font-bold shadow-sm">
                              +{ownersCount - 5}
                            </div>
                          )}
@@ -265,7 +275,7 @@ function GameDetailModal({ game, onClose }: { game: Game, onClose: () => void })
                        <div className="mt-2 bg-white/50 border border-[#E0D8C0] rounded-xl p-2 animate-in slide-in-from-top-2">
                           {game.owners.map(owner => (
                              <div key={owner.id} className="flex items-center gap-3 p-2 hover:bg-white rounded-lg transition-colors">
-                                <div className="w-8 h-8 rounded-full bg-[#D6A886] flex items-center justify-center text-white text-xs font-bold">
+                                <div className="w-6 h-6 rounded-full bg-[#D6A886] flex items-center justify-center text-white text-[10px] font-bold">
                                    {owner.avatar}
                                 </div>
                                 <span className="text-[#5D4037] font-medium text-sm">{owner.name}</span>
@@ -280,52 +290,51 @@ function GameDetailModal({ game, onClose }: { game: Game, onClose: () => void })
               </div>
 
               {/* COMMENTS SECTION */}
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-[#E0D8C0]">
-                <h3 className="text-lg font-bold text-[#5D4037] mb-4 flex items-center gap-2">
+              <div className="bg-white rounded-xl p-5 shadow-sm border border-[#E0D8C0]">
+                <h3 className="text-sm font-bold text-[#5D4037] mb-4 flex items-center gap-2">
                   <span>Friends' Thoughts</span>
                 </h3>
                 
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {game.comments.length > 0 ? game.comments.map((comment) => (
-                    <div key={comment.id} className="flex gap-4">
+                    <div key={comment.id} className="flex gap-3">
                       <div className="flex-shrink-0">
-                        <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold border-2 border-white shadow-sm">
+                        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold border-2 border-white shadow-sm text-xs">
                            {comment.avatar}
                         </div>
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1 gap-2">
-                            <span className="font-bold text-[#5D4037]">{comment.author}</span>
-                            <span className="text-xs text-[#8D7F75]">2h ago</span>
+                            <div className="flex items-center gap-2">
+                               <span className="font-bold text-[#5D4037] text-sm">{comment.author}</span>
+                               {comment.owns && (
+                                  <span className="px-1.5 py-0.5 bg-[#C1E8CE] text-[#2C4834] text-[9px] font-bold uppercase tracking-wider rounded-sm border border-[#A3D9B5]">Owns</span>
+                               )}
+                            </div>
+                            <span className="text-[10px] text-[#8D7F75]">2h</span>
                         </div>
-                        <div className="bg-[#F5F1E8] p-3 rounded-lg rounded-tl-none text-[#5D4037] text-sm leading-relaxed relative">
-                           {/* Little triangle for speech bubble */}
-                           <div className="absolute top-0 left-[-6px] w-0 h-0 border-t-[6px] border-t-[#F5F1E8] border-l-[6px] border-l-transparent"></div>
-                          "{comment.text}"
-                        </div>
-                        {comment.likes && (
-                          <button className="text-xs text-[#8D7F75] font-semibold mt-1 hover:text-[#5D4037]">
-                            Like ({comment.likes})
-                          </button>
+                        {comment.text && (
+                          <div className="bg-[#F5F1E8] p-2.5 rounded-lg rounded-tl-none text-[#5D4037] text-sm leading-relaxed relative">
+                            "{comment.text}"
+                          </div>
                         )}
                       </div>
                     </div>
                   )) : (
-                    <div className="text-center py-8">
-                       <p className="text-[#8D7F75] text-sm italic">No thoughts yet. Be the first to share!</p>
+                    <div className="text-center py-4">
+                       <p className="text-[#8D7F75] text-xs italic">No thoughts yet.</p>
                     </div>
                   )}
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-[#E0D8C0]">
+                <div className="mt-4 pt-3 border-t border-[#E0D8C0]">
                    <input 
                      type="text" 
                      placeholder="Write a comment..." 
-                     className="w-full px-4 py-3 rounded-xl bg-[#F5F1E8] border-none focus:ring-2 focus:ring-[#C1E8CE] text-[#5D4037] placeholder-[#8D7F75]"
+                     className="w-full px-3 py-2.5 rounded-lg bg-[#F5F1E8] border-none focus:ring-2 focus:ring-[#C1E8CE] text-[#5D4037] placeholder-[#8D7F75] text-sm"
                    />
                 </div>
               </div>
-            </div>
          </div>
       </div>
     </div>
