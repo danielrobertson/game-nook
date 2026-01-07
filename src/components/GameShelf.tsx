@@ -55,6 +55,11 @@ export default function GameShelf({ games = [] }: GameShelfProps) {
     shelf3: true
   })
 
+  // Zoom state
+  const [zoom, setZoom] = useState(1)
+  const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.2, 2.0))
+  const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.2, 0.4))
+
   const toggle = (key: keyof typeof debug) => setDebug(p => ({ ...p, [key]: !p[key] }))
 
   const [selectedGame, setSelectedGame] = useState<Game | null>(null)
@@ -69,15 +74,43 @@ export default function GameShelf({ games = [] }: GameShelfProps) {
 
   return (
     <div className="w-full max-w-[1500px] mx-auto p-4 flex flex-col items-center">
+      {/* Zoom Controls */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2">
+        <button
+          onClick={handleZoomIn}
+          className="p-3 bg-white/90 backdrop-blur shadow-lg rounded-full text-[#5D4037] hover:bg-white hover:scale-110 transition-all border border-[#E0D8C0]"
+          aria-label="Zoom In"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            <line x1="11" y1="8" x2="11" y2="14"></line>
+            <line x1="8" y1="11" x2="14" y2="11"></line>
+          </svg>
+        </button>
+        <button
+          onClick={handleZoomOut}
+          className="p-3 bg-white/90 backdrop-blur shadow-lg rounded-full text-[#5D4037] hover:bg-white hover:scale-110 transition-all border border-[#E0D8C0]"
+          aria-label="Zoom Out"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            <line x1="8" y1="11" x2="14" y2="11"></line>
+          </svg>
+        </button>
+      </div>
+
       {/* 
          OUTER FRAME CONTAINER
          Removed padding/bg, now using separate divs for the frame parts
       */}
       <div
-        className={`relative w-full rounded-t-lg shadow-2xl overflow-hidden ${debug.mainContainer ? 'bg-[#C69A80]' : ''}`} // bg is fallback
+        className={`relative w-full rounded-t-lg shadow-2xl overflow-hidden transition-transform duration-300 ease-out origin-top ${debug.mainContainer ? 'bg-[#C69A80]' : ''}`} // bg is fallback
         style={{
           // border: '1px solid #5D4037',
-          borderRadius: '12px 12px 0 0'
+          borderRadius: '12px 12px 0 0',
+          transform: `scale(${zoom})`
         }}
       >
 
@@ -417,6 +450,8 @@ function LeftWall({ debugShow = true }: { debugShow?: boolean }) {
           borderTop: `1px solid ${borderColor}`,
           borderBottom: `1px solid ${borderColor}`,
           borderRight: `1px solid ${borderColor}`,
+          borderTopLeftRadius: '12px',
+          overflow: 'hidden'
         }}
       >
         {/* Warmth Overlay */}
@@ -458,6 +493,8 @@ function RightWall({ debugShow = true }: { debugShow?: boolean }) {
           borderTop: `1px solid ${borderColor}`,
           borderBottom: `1px solid ${borderColor}`,
           borderRight: `1px solid ${borderColor}`,
+          borderTopRightRadius: '12px',
+          overflow: 'hidden'
         }}
       >
         {/* Warmth Overlay */}
