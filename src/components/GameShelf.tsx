@@ -450,6 +450,8 @@ function LeftWall({ debugShow = true }: { debugShow?: boolean }) {
           borderTop: `1px solid ${borderColor}`,
           borderBottom: `1px solid ${borderColor}`,
           borderRight: `1px solid ${borderColor}`,
+          borderTopLeftRadius: '12px',
+          overflow: 'hidden'
         }}
       >
         {/* Warmth Overlay */}
@@ -491,6 +493,8 @@ function RightWall({ debugShow = true }: { debugShow?: boolean }) {
           borderTop: `1px solid ${borderColor}`,
           borderBottom: `1px solid ${borderColor}`,
           borderRight: `1px solid ${borderColor}`,
+          borderTopRightRadius: '12px',
+          overflow: 'hidden'
         }}
       >
         {/* Warmth Overlay */}
