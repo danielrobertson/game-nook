@@ -4,8 +4,8 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 flex items-center justify-between px-8 py-4 bg-green-200 border-b-4 border-stone-400 shadow-sm">
       <div className="flex items-center">
-        <Link 
-          to="/" 
+        <Link
+          to="/"
           className="text-3xl font-extrabold text-stone-800 tracking-tight hover:scale-105 transition-transform drop-shadow-sm"
         >
           Game Nook
