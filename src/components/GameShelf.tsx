@@ -68,7 +68,7 @@ export default function GameShelf({ games = [] }: GameShelfProps) {
   ]
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4 flex flex-col items-center">
+    <div className="w-full max-w-[1500px] mx-auto p-4 flex flex-col items-center">
       {/* 
          OUTER FRAME CONTAINER
          Removed padding/bg, now using separate divs for the frame parts
@@ -95,16 +95,16 @@ export default function GameShelf({ games = [] }: GameShelfProps) {
             THE "ROOM" (Inner Recess) 
             Pushed in by 24px margin to sit inside the outer frame
         */}
-        <div className={`relative flex flex-col min-h-[600px] ${debug.room ? 'bg-[#5D4037]' : ''} m-[24px]`}>
+        <div className={`relative flex flex-col min-h-[1000px] ${debug.room ? 'bg-[#5D4037]' : ''} m-[40px]`}>
 
           {/* THE BACKBOARD */}
           <div
             className={`relative z-20 flex-1 flex flex-col ${debug.backboard ? 'bg-[#BEB4A4]' : ''}`}
             style={{
               // backgroundColor: '#C4A484',
-              marginTop: '30px', // Matches Height of Top Wall
-              marginLeft: '24px', // Matches Width of Left Wall
-              marginRight: '24px', // Matches Width of Right Wall
+              marginTop: '55px', // Matches Height of Top Wall
+              marginLeft: '40px', // Matches Width of Left Wall
+              marginRight: '40px', // Matches Width of Right Wall
               // If we add boxShadow here we'll have to add it to the inside of every wall as well..
               // boxShadow: 'inset 0 0 40px rgba(0,0,0,0.15)',
             }}
@@ -145,16 +145,16 @@ export default function GameShelf({ games = [] }: GameShelfProps) {
 
 function ShelfRow({ games = [], onGameClick }: { games: Game[], onGameClick: (game: Game) => void }) {
   // Dimensions for the top surface perspective
-  const height = 14
-  const inset = 24
+  const height = 25
+  const inset = 40
 
   // Calculate angle in degrees: tan(angle) = opposite/adjacent = inset/height
   const skewAngle = Math.atan(inset / height) * (180 / Math.PI)
   const topSurfaceDarkness = 0.2 // Adjust opacity (0-1) to make the top surface darker
 
   return (
-    <div className="flex-1 relative flex items-end px-2 group min-h-[200px]">
-      <div className="absolute z-30 w-[calc(100%+48px)] -ml-6 h-full flex items-end justify-center px-6 pb-[25px] gap-4">
+    <div className="flex-1 relative flex items-end px-2 group min-h-[350px]">
+      <div className="absolute z-30 w-[calc(100%+80px)] -ml-10 h-full flex items-end justify-center px-6 pb-[45px] gap-4">
         {games.map((game) => (
           <button
             key={game.id}
@@ -164,14 +164,14 @@ function ShelfRow({ games = [], onGameClick }: { games: Game[], onGameClick: (ga
             <img
               src={game.spineImage}
               alt={`${game.title} spine`}
-              className="h-46 w-auto object-contain drop-shadow-2xl rounded-[1px]"
+              className="h-[340px] w-auto object-contain drop-shadow-2xl rounded-[1px]"
             />
           </button>
         ))}
       </div>
 
       {/* The Shelf PLANK */}
-      <div className="absolute bottom-0 left-[-24px] right-[-24px] z-20">
+      <div className="absolute bottom-0 left-[-40px] right-[-40px] z-20">
         {/* 1. Top Surface of Shelf */}
         <div
           className="relative border-[#5D4037]/40"
@@ -216,7 +216,7 @@ function ShelfRow({ games = [], onGameClick }: { games: Game[], onGameClick: (ga
 
         {/* 2. Front Face of Shelf (Thicker) */}
         <div
-          className="h-[20px] relative shadow-lg"
+          className="h-[35px] relative shadow-lg"
           style={{
             // Match outer frame style
             backgroundImage: woodTexture_horizontal,
@@ -410,7 +410,7 @@ function LeftWall({ debugShow = true }: { debugShow?: boolean }) {
     <>
       {/* Front Wall */}
       <div
-        className="absolute top-0 bottom-0 left-0 w-[24px] z-30"
+        className="absolute top-0 bottom-0 left-0 w-[40px] z-30"
         style={{
           backgroundImage: woodTexture_vertical,
           borderLeft: `1px solid ${borderColor}`,
@@ -424,12 +424,12 @@ function LeftWall({ debugShow = true }: { debugShow?: boolean }) {
       </div>
       {/* Inner Wall */}
       <div
-        className="absolute top-0 bottom-0 left-[24px] w-[24px] z-10"
+        className="absolute top-0 bottom-0 left-[40px] w-[40px] z-10"
         style={{
           // backgroundColor: '#D7A785',
           backgroundImage: woodTexture_vertical,
           // Trapezoid narrowing rightwards - precise miter
-          clipPath: 'polygon(0 0, 100% 30px, 100% 100%, 0 100%)',
+          clipPath: 'polygon(0 0, 100% 55px, 100% 100%, 0 100%)',
           borderRight: `1px solid ${borderColor}`,
           borderBottom: `1px solid ${borderColor}`,
         }}
@@ -451,7 +451,7 @@ function RightWall({ debugShow = true }: { debugShow?: boolean }) {
   return debugShow && (
     <>
       <div
-        className="absolute top-0 bottom-0 right-0 w-[24px] z-30"
+        className="absolute top-0 bottom-0 right-0 w-[40px] z-30"
         style={{
           backgroundImage: woodTexture_vertical,
           borderLeft: `1px solid ${borderColor}`,
@@ -464,12 +464,12 @@ function RightWall({ debugShow = true }: { debugShow?: boolean }) {
         <div className="absolute inset-0 bg-amber-500 mix-blend-overlay pointer-events-none" style={{ opacity: woodWarmthOpacity }}></div>
       </div>
       <div
-        className="absolute top-0 bottom-0 right-[24px] w-[24px] z-10"
+        className="absolute top-0 bottom-0 right-[40px] w-[40px] z-10"
         style={{
           // backgroundColor: '#D7A785',
           backgroundImage: woodTexture_vertical,
           // Trapezoid narrowing leftwards - precise miter
-          clipPath: 'polygon(0 30px, 100% 0, 100% 100%, 0 100%)',
+          clipPath: 'polygon(0 55px, 100% 0, 100% 100%, 0 100%)',
           borderLeft: `1px solid ${borderColor}`,
           borderBottom: `1px solid ${borderColor}`,
         }}
@@ -486,8 +486,8 @@ function RightWall({ debugShow = true }: { debugShow?: boolean }) {
 
 function TopWall({ debugShow = true }: { debugShow?: boolean }) {
   const borderColor = '#5D4037'
-  const height = 30
-  const inset = 23
+  const height = 55
+  const inset = 38
   const skewAngle = Math.atan(inset / height) * (180 / Math.PI)
   const topSurfaceDarkness = 0.2
 
@@ -495,7 +495,7 @@ function TopWall({ debugShow = true }: { debugShow?: boolean }) {
     <>
       {/* Outer Top */}
       <div
-        className="absolute top-0 left-[24px] right-[24px] h-[24px] z-30"
+        className="absolute top-0 left-[40px] right-[40px] h-[40px] z-30"
         style={{
           backgroundImage: woodTexture_horizontal,
           borderTop: `1px solid ${borderColor}`,
@@ -509,7 +509,7 @@ function TopWall({ debugShow = true }: { debugShow?: boolean }) {
 
       {/* Inner Top */}
       <div
-        className="absolute top-[24px] left-[24px] right-[24px] z-15"
+        className="absolute top-[40px] left-[40px] right-[40px] z-15"
         style={{
           height: `${height}px`,
           // backgroundColor: '#D7A785',
@@ -531,9 +531,9 @@ function TopWall({ debugShow = true }: { debugShow?: boolean }) {
       {/* We need these because the clipPath doesn't allow us to use a border on the slanted sides */}
       {/* Left Slant */}
       <div
-        className="absolute top-[24px] w-0 z-20 pointer-events-none"
+        className="absolute top-[40px] w-0 z-20 pointer-events-none"
         style={{
-          left: `24px`, // 24px offset from parent container
+          left: `40px`, // 40px offset from parent container
           height: `${height}px`,
           borderLeft: `1px solid ${borderColor}`,
           transform: `skewX(${skewAngle}deg)`,
@@ -543,9 +543,9 @@ function TopWall({ debugShow = true }: { debugShow?: boolean }) {
 
       {/* Right Slant */}
       <div
-        className="absolute top-[24px] w-0 z-20 pointer-events-none"
+        className="absolute top-[40px] w-0 z-20 pointer-events-none"
         style={{
-          right: `24px`, // 24px offset from parent container
+          right: `40px`, // 40px offset from parent container
           height: `${height}px`,
           borderRight: `1px solid ${borderColor}`,
           transform: `skewX(-${skewAngle}deg)`,
